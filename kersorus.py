@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 NUMBER_OF_LEDS = 8
-#bits = [24, 25,  8, 7, 12, 16, 20, 21]
+leds = [24, 25,  8, 7, 12, 16, 20, 21]
 bits  = [10,  9, 11, 5,  6, 13, 19, 26]
 
 def lightUp(ledNumber, period):
@@ -143,10 +143,40 @@ def trdscript (timelen):
     GPIO.output (bits, 0)
 
 
+def adc_1 ():
+    print ("Введите число (-1 для выхода):")
+    while True:
+        num = int (input ())
+        if num == -1:
+            GPIO.output (bits, 0)
+            break
+
+        print (3.3 * float (num) / 255)
+        num2dac (num)
+
+def adc_2 ():
+    voltage = 0
+    newVoltage = 0
+
+    while True:
+
+        for i in range (0, 255) :
+            num2dac (i)
+            time.sleep (0.0001)
+            if GPIO.input (4) != 1 :
+                newVoltage = 3.3 * float (i) / 255
+                break
+    
+        if abs (newVoltage - voltage) > 1.0 / 255.0 :
+            print (newVoltage, int (newVoltage * 255 / 3.3))
+            voltage = newVoltage
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup  (bits, GPIO.OUT)
+GPIO.setup  (17, GPIO.OUT)
+GPIO.setup  (4, GPIO.IN)
 GPIO.output (bits, GPIO.LOW)
+GPIO.output (17, 1)
 
 #lightUp(5, 1)
 #GPIO.output(bits, 1)
@@ -159,5 +189,8 @@ GPIO.output (bits, GPIO.LOW)
 #SHIM(1, 150)
 
 #firscript (1)
-secscript ()
+#secscript ()
 #trdscript (3)
+
+#adc_1 ()
+adc_2 ()
